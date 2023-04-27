@@ -47,6 +47,7 @@ export class AppComponent {
 
           const checkInStorage = (key) => {
             return new Promise((resolve) => {
+              console.log('chrome.storage.local: ', chrome.storage.local);
               chrome.storage.local.get([key], (result) => {
                 resolve(result[key]);
               });
@@ -67,9 +68,13 @@ export class AppComponent {
               event.target.value = '';
               alert("Invalid file format.")
             } else {
-              await chrome.storage.local.set({ 'isImageUploading': true });
-              console.log('await checkInStorage ', await checkInStorage('isImageUploading'));
+              await chrome.storage.local.set({ 'urlsPath': JSON.stringify(finalData.slice(1, finalData.length)) });
+              console.log('await checkInStorage ', await checkInStorage('urlsPath'));
               console.log('finalData: ', finalData);
+              chrome.runtime.sendMessage({
+                action: "URLS",
+                data: finalData.slice(1, finalData.length)
+              });
             }
           } else {
             event.target.value = '';
