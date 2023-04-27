@@ -1,0 +1,29 @@
+{
+  "name": "Virtuous Cloud Extension",
+  "description": "Build an Extension to download images!",
+  "version": "1.0",
+  "manifest_version": 3,
+  "host_permissions": [
+    "https://*.google.com/"
+  ],
+  "permissions": [
+    "identity",
+    "storage",
+    "unlimitedStorage",
+    "tabs",
+    "scripting",
+    "activeTab"
+  ],
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "assets/images/vai-logo.png",
+    "32": "assets/images/vai-logo.png",
+    "48": "assets/images/vai-logo.png",
+    "128": "assets/images/vai-logo.png"
+  }
+}
