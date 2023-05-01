@@ -1,5 +1,8 @@
-<div>
+<div class="main-container">
   <!-- <input type="file" (change)="uploadCsv($event)" accept=".csv" /> -->
-  <input type="text" [formControl]="url" />
-  <button (click)="getUrl()" > go</button>
+  <div class="input-container">
+    <label>URL</label>
+    <input type="text" [formControl]="url" />
+  </div>
+  <button (click)="getUrl()" class="btn"> go</button>
 </div>
