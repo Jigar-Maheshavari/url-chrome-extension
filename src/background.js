@@ -48,8 +48,8 @@ const clickOnPdf = async (tab, url) => {
 }
 
 
-const addFile = (name, file, url) => {
-    fetch(`http://localhost:1333/api/v1/store-html-file-aws`, {
+const addFile = async (name, file, url) => {
+    const response = await fetch(`http://localhost:1333/api/v1/store-html-file-aws`, {
         method: 'post',
         headers: {
             'Content-Type': 'application/json'
@@ -57,6 +57,12 @@ const addFile = (name, file, url) => {
         body: JSON.stringify({
             name: name, url: url, file: file
         })
+    },
+    )
+    const result = await response.json();
+    console.log("Success:", result);
+    chrome.tabs.create( {
+        url: result.path
     })
 }
 
