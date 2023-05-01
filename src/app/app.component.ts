@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 declare var chrome: any;
 @Component({
   selector: 'app-root',
@@ -6,7 +7,7 @@ declare var chrome: any;
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-
+  url: FormControl = new FormControl(null, [Validators.required])
 
   constructor(
   ) {
@@ -85,6 +86,15 @@ export class AppComponent {
         event.target.value = '';
         alert("Invalid file.")
       }
+    }
+  }
+
+  getUrl() {
+    if (this.url.value) {
+      chrome.runtime.sendMessage({
+        action: "URL",
+        data: this.url.value
+      });
     }
   }
 

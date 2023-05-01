@@ -1,3 +1,5 @@
 <div>
-  <input type="file" (change)="uploadCsv($event)" accept=".csv" />
+  <!-- <input type="file" (change)="uploadCsv($event)" accept=".csv" /> -->
+  <input type="text" [formControl]="url" />
+  <button (click)="getUrl()" > go</button>
 </div>
