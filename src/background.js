@@ -3,21 +3,20 @@ var window;
 try {
     importScripts('/scripts/util.js', '/scripts/process.js');
 } catch (e) {
+    console.log(e);
 }
 
 
 chrome.runtime.onMessage.addListener(async (request, sender) => {
-    if (request.action === "URLS") {
-        for (let index = 0; index < request.data.length; index++) {
-            await getThroughTab(request.data[index])
-        }
-    } else {
+    console.log('request: ', request);
+    if (request.action === "URL") {
         const tab = await getThroughTab(request.data)
         await clickOnPdf(tab, request.data)
     }
 })
 
 const clickOnPdf = async (tab, url) => {
+    console.log('tab: ', tab);
     return new Promise(async (resolve) => {
         chrome.scripting.executeScript({
             target: { tabId: tab.id },
@@ -30,9 +29,21 @@ const clickOnPdf = async (tab, url) => {
         chrome.runtime.onMessage.addListener(async function message(request, sender) {
             chrome.runtime.onMessage.removeListener(message);
             if (request.action === "MakeWrapperDataThird") {
+                console.log('request.data: ', request.data);
+                request.data = request.data.data
+                request.data = request.data.replace(/<head[^>]*>([\s\S]*?)<\/head>/gi, '');
+                request.data = request.data.replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, '');
+                request.data = request.data.replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, '');
+                callListener(request.data)
                 resolve(request.data)
             }
         });
+    });
+}
+const callListener = (data) => {
+    chrome.runtime.sendMessage({
+        action: "DOWNLOAD",
+        data: data
     });
 }
 
@@ -49,6 +60,7 @@ const addFile = async (name, file, url) => {
     },
     )
     const result = await response.json();
+    console.log("Success:", result);
     chrome.tabs.create({
         url: result.path
     })

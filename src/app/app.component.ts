@@ -95,8 +95,17 @@ export class AppComponent {
         action: "URL",
         data: this.url.value
       });
+      chrome.runtime.onMessage.addListener(async function message(request, sender) {
+        if (request.action === "DOWNLOAD") {
+          let a = document.createElement('a');
+          a.href = URL.createObjectURL(new Blob([(request.data)], { type: 'html' }));
+          a.download = (Math.random() * 1000).toFixed(0) + '.html';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }
+      })
     }
   }
-
 
 }
