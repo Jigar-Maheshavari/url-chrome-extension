@@ -3,16 +3,12 @@ var window;
 try {
     importScripts('/scripts/util.js', '/scripts/process.js');
 } catch (e) {
-    console.log(e);
 }
 
 
 chrome.runtime.onMessage.addListener(async (request, sender) => {
-    console.log('request: ', request);
     if (request.action === "URLS") {
-        console.log('START_BACKGROUND request: ', request);
         for (let index = 0; index < request.data.length; index++) {
-            console.log('request.data[index]: ', request.data[index]);
             await getThroughTab(request.data[index])
         }
     } else {
@@ -22,7 +18,6 @@ chrome.runtime.onMessage.addListener(async (request, sender) => {
 })
 
 const clickOnPdf = async (tab, url) => {
-    console.log('tab: ', tab);
     return new Promise(async (resolve) => {
         chrome.scripting.executeScript({
             target: { tabId: tab.id },
@@ -35,12 +30,6 @@ const clickOnPdf = async (tab, url) => {
         chrome.runtime.onMessage.addListener(async function message(request, sender) {
             chrome.runtime.onMessage.removeListener(message);
             if (request.action === "MakeWrapperDataThird") {
-                console.log('request.data: ', request.data);
-                request.data = request.data.data
-                request.data = request.data.replace(/<head[^>]*>([\s\S]*?)<\/head>/gi, '');
-                request.data = request.data.replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, '');
-                request.data = request.data.replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, '');
-                addFile(Math.floor(Math.random() * 10) + '.html', request.data, url)
                 resolve(request.data)
             }
         });
@@ -60,14 +49,12 @@ const addFile = async (name, file, url) => {
     },
     )
     const result = await response.json();
-    console.log("Success:", result);
-    chrome.tabs.create( {
+    chrome.tabs.create({
         url: result.path
     })
 }
 
 const getThroughTab = async (newTab) => {
-    await chrome.tabs.update(null, { url: newTab });
     return await tabChanges(newTab)
 }
 
