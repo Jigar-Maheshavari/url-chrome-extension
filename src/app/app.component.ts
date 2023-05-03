@@ -89,14 +89,39 @@ export class AppComponent {
     }
   }
 
-  getUrl() {
+  tabChanges(url) {
+    return new Promise(async (resolve) => {
+      await chrome.tabs.update(null, { url: url });
+      chrome.tabs.onUpdated.addListener(async function getTab(tabId, info, tab) {
+        chrome.runtime.onMessage.removeListener(getTab);
+        if (tab && tab.status === 'complete') {
+          resolve(tab)
+        }
+      });
+    })
+  }
+
+  async getUrl() {
     if (this.url.value) {
-      chrome.runtime.sendMessage({
-        action: "URL",
-        data: this.url.value
+      const tab: any = await this.tabChanges(this.url.value)
+      chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ['scripts/download-html.js'],
+      }, (data) => {
+        if (!data) {
+          console.log('chrome.runtime.lastError: ', chrome.runtime.lastError);
+          // resolve({ success: false, message: chrome.runtime.lastError ? chrome.runtime.lastError.message : 'Something wnt wrong when make wrapper' })
+        }
       });
       chrome.runtime.onMessage.addListener(async function message(request, sender) {
-        if (request.action === "DOWNLOAD") {
+        chrome.runtime.onMessage.removeListener(message);
+        if (request.action === "MakeWrapperDataThird") {
+          console.log('request.data: ', request.data);
+          request.data = request.data.data
+          request.data = request.data.replace(/<head[^>]*>([\s\S]*?)<\/head>/gi, '');
+          request.data = request.data.replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, '');
+          request.data = request.data.replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, '');
+          // that.callListener(request.data)
           let a = document.createElement('a');
           a.href = URL.createObjectURL(new Blob([(request.data)], { type: 'html' }));
           a.download = (Math.random() * 1000).toFixed(0) + '.html';
@@ -104,7 +129,21 @@ export class AppComponent {
           a.click();
           document.body.removeChild(a);
         }
-      })
+      });
+      // chrome.runtime.sendMessage({
+      //   action: "URL",
+      //   data: this.url.value
+      // });
+      // chrome.runtime.onMessage.addListener(async function message(request, sender) {
+      //   if (request.action === "DOWNLOAD") {
+      //     let a = document.createElement('a');
+      //     a.href = URL.createObjectURL(new Blob([(request.data)], { type: 'html' }));
+      //     a.download = (Math.random() * 1000).toFixed(0) + '.html';
+      //     document.body.appendChild(a);
+      //     a.click();
+      //     document.body.removeChild(a);
+      //   }
+      // })
     }
   }
 

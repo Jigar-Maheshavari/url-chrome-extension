@@ -4,9 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start:serve": "ng serve",
-    "start": " ng build --configuration=local --watch",
-    "build:dev": "ng build --prod --configuration=development && node generate-plugin-env --development",
-    "build:prod": "ng build --prod --configuration=production && node generate-plugin-env --production",
+    "start": " ng build --watch",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",

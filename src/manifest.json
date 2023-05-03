@@ -4,11 +4,11 @@
   "version": "1.0",
   "manifest_version": 3,
   "host_permissions": [
-    "https://*.google.com/"
+    "<all_urls>"
   ],
   "permissions": [
     "identity",
-    "storage",
+    "storage", 
     "unlimitedStorage",
     "tabs",
     "scripting",
@@ -16,9 +16,6 @@
   ],
   "action": {
     "default_popup": "index.html"
-  },
-  "background": {
-    "service_worker": "background.js"
   },
   "icons": {
     "16": "assets/images/vai-logo.png",
